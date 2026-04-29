@@ -3,47 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <title>Cat Info</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="index.css">
+  
 </head>
 <body>
 
 <div class="page">
 
-  <!-- Big faded title -->
   <h1 class="bg-title">Cat Info</h1>
 
-  <!-- Top text -->
   <div class="header-text">
     <h2>Learn more about different breeds!</h2>
   </div>
 
-  <!-- Form section -->
   <div class="form">
 
     <div class="row">
       <label>Cat Type :</label>
-      <input type="text">
+      <input type="text" id="cat-type">
     </div>
 
     <div class="row">
       <label>Origin:</label>
-      <input type="text">
+      <input type="text" id="origin">
     </div>
 
     <div class="column">
       <label>Description:</label>
-      <textarea></textarea>
+      <div class="description-box" id="description-box">
+  <div id="text-content"></div>
+  <div class="img-row" id="img-row"></div>
+</div>
     </div>
 
   </div>
 
-  <!-- Search section -->
-  <div class="search-section">
-    <div class="star"></div>
-    <input type="text" placeholder="SEARCH:">
-  </div>
+<div class="search-section">
+  <button id="search-btn" class="star-btn">★</button>
+  <input type="text" id="search-input" placeholder="SEARCH:">
+</div>
 
 </div>
 
+<script src="index.js"></script>
 </body>
 </html>
