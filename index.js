@@ -1,5 +1,5 @@
 const catTypeInput = document.getElementById("cat-type");
-const originInput = document.getElementById("origin");
+const originInput = document.getElementById("origin"); 
 
 const textContent = document.getElementById("text-content");
 const imgRow = document.getElementById("img-row");
