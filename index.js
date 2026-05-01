@@ -7,9 +7,9 @@ const imgRow = document.getElementById("img-row");
 const searchInput = document.getElementById("search-input");
 const searchBtn = document.getElementById("search-btn");
 
-// default cat so page is NOT empty
 window.addEventListener("DOMContentLoaded", () => {
   fetchCat("bengal");
+  renderFavorites();
 });
 
 searchBtn.addEventListener("click", () => {
@@ -39,18 +39,17 @@ async function fetchCat(query) {
       return;
     }
 
-    // inputs
+    currentCat = cat
+
     catTypeInput.value = cat.name;
     originInput.value = cat.origin;
 
-    // text always shows
     textContent.innerHTML = `
       <p><strong>Description:</strong> ${cat.description || "No description available"}</p>
       <p><strong>Temperament:</strong> ${cat.temperament || "N/A"}</p>
       <p><strong>Life Span:</strong> ${cat.life_span || "N/A"} years</p>
     `;
 
-    // images (safe fetch)
     const imgRes = await fetch(
       `https://api.thecatapi.com/v1/images/search?limit=3&breed_ids=${cat.id}`
     );
@@ -65,5 +64,64 @@ async function fetchCat(query) {
     console.error(err);
     textContent.innerHTML = "<p>Error loading data</p>";
     imgRow.innerHTML = "";
+  }
+}
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+const appSettings = {
+  databaseURL: "https://cat-api-d08f2-default-rtdb.firebaseio.com/"
+};
+
+const app = initializeApp(appSettings);
+const database = getDatabase(app);
+const favoritesRef = ref(database, "favorites");
+
+let currentCat = null; // To store the result of the latest search
+
+const favBtn = document.getElementById("fav-btn");
+
+favBtn.addEventListener("click", function () {
+  if (!currentCat) return alert("Search for a cat first!");
+
+  const catData = {
+    name: currentCat.name,
+    origin: currentCat.origin,
+    savedAt: Date.now()
+  };
+
+  push(favoritesRef, catData);
+
+  let localFavs = JSON.parse(localStorage.getItem("favCats")) || [];
+  localFavs.push(catData);
+  localStorage.setItem("favCats", JSON.stringify(localFavs));
+
+  alert("Saved!");
+});
+
+async function renderFavorites() {
+  const listDiv = document.getElementById("favorites-list");
+  listDiv.innerHTML = "<h3>My Favorites:</h3>";
+
+  try {
+    const snapshot = await get(child(ref(database), "favorites"));
+
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+
+      Object.values(data).forEach(cat => {
+        listDiv.innerHTML += `<p>🐾 ${cat.name} (${cat.origin})</p>`;
+      });
+    } else {
+      listDiv.innerHTML += "<p>No favorites yet.</p>";
+    }
+  } catch (e) {
+    console.error(e);
+
+    const localFavs = JSON.parse(localStorage.getItem("favCats")) || [];
+    localFavs.forEach(cat => {
+      listDiv.innerHTML += `<p>🏠 ${cat.name} (Local)</p>`;
+    });
   }
 }
